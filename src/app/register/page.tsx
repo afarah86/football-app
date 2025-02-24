@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { countries } from '@/lib/countries';
+import { signIn } from 'next-auth/react';
 
 export default function Register() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function Register() {
     e.preventDefault();
     
     try {
+      // Register the user
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -53,9 +55,19 @@ export default function Register() {
       }
 
       toast.success('Successfully registered!');
-      setTimeout(() => {
-        router.push('/home');
-      }, 1500);
+
+      // Sign in the user automatically after registration
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: true,
+        callbackUrl: '/home'
+      });
+
+      if (result?.error) {
+        toast.error('Failed to sign in after registration');
+      }
+
     } catch (error) {
       console.error('Registration error:', error);
       toast.error('Registration failed. Please try again.');

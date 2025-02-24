@@ -4,20 +4,27 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: 'credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        // Temporary mock user
-        return { id: '1', email: credentials?.email };
+        // For testing, return a mock user
+        return {
+          id: '1',
+          email: credentials?.email,
+          name: 'Test User'
+        };
       }
     })
   ],
   pages: {
-    signIn: '/login'
+    signIn: '/login',
+  },
+  session: {
+    strategy: 'jwt'
   }
 });
 
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };
